@@ -1,1 +1,2 @@
-https://github.com/Adriwin06/Ultimate-CommonUI-Menu-System?tab=readme-ov-file
+[/Script/Engine.RendererSettings]
+r.Streaming.PoolSize=1000
