@@ -1,2 +1,1 @@
-[/Script/Engine.RendererSettings]
-r.Streaming.PoolSize=1000
+fffde0a5-1ac8-447a-b852-3090fe036e9f
