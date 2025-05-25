@@ -1,6 +1,5 @@
 -- iman latifi
 library IEEE; use IEEE.STD_LOGIC_1164.all;
-
 entity seven_seg is
     port
     (
@@ -24,14 +23,12 @@ begin
             when "00111" => segments <= "00000001100000";
             when "01000" => segments <= "00000001111111";
             when "01001" => segments <= "00000001110001";
-
             when "01010" => segments <= "01100001111110";
             when "01011" => segments <= "01100000110000";
             when "01100" => segments <= "01100001101101";
             when "01101" => segments <= "01100001111001";
             when "01110" => segments <= "01100000110011";
             when "01111" => segments <= "01100001011011";
-
             when "10000" => segments <= "01100001011111";
             when "10001" => segments <= "01100001110000";
             when "10010" => segments <= "01100001111111";
@@ -40,7 +37,6 @@ begin
             when "10101" => segments <= "11011010110000";
             when "10110" => segments <= "11011011101101";
             when "10111" => segments <= "11011011111101";
-
             when others  => segments <= "00000000000000";
         end case;
     end process;
