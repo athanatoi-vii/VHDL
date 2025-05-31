@@ -1,52 +1,93 @@
--- iman latifi
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-entity TrafficLight is
-    Port
-    (
-        clk     : in  STD_LOGIC;
-        reset   : in  STD_LOGIC;
-        light   : out STD_LOGIC_VECTOR (1 downto 0)
+entity Tlightemoore is
+    generic (
+        TIME_START : INTEGER := 0;
+        TIME_END   : INTEGER := 120
     );
+    port(
+        clk, reset : in STD_LOGIC;
+        ta, tb     : in STD_LOGIC;
+        la, lb     : out STD_LOGIC_VECTOR(1 DOWNTO 0)
+    );
+end entity;
 
-end TrafficLight;
-
-architecture Behavioral of TrafficLight is
-    type state_type is (S0, S1, S2);
-    signal state, next_state : state_type;
-    signal timer : integer range 0 to 119;
-
+architecture Behavioral of Tlightemoore is
+    type statetype is (s0, s1, s2, s3);
+    signal state, nextstate : statetype;
+    signal counter : INTEGER range 0 to 200 := TIME_START;
 begin
+
+    
     process(clk, reset)
     begin
         if reset = '1' then
-            state <= S0;
-            timer <= 0;
+            state <= s0;
         elsif rising_edge(clk) then
-            if timer = 119 then
-                state <= next_state;
-                timer <= 0;
+            state <= nextstate;
+        end if;
+    end process;
+
+    
+    process(clk, reset)
+    begin
+        if reset = '1' then
+            counter <= TIME_START;
+        elsif rising_edge(clk) then
+            if state = s0 or state = s2 then
+                if counter < TIME_END then
+                    counter <= counter + 1;
+                end if;
             else
-                timer <= timer + 1;
+                counter <= TIME_START;
             end if;
         end if;
     end process;
 
-    process(state)
+    
+    process(state, ta, tb, counter)
     begin
         case state is
-            when S0 =>
-                light <= "00";
-                next_state <= S1;
-            when S1 =>
-                light <= "01";
-                next_state <= S2;
-            when S2 =>
-                light <= "10";
-                next_state <= S0;
+            when s0 =>
+                if ta = '1' then
+                    nextstate <= s0;
+                elsif ta = '0' or counter = TIME_END then
+                    nextstate <= s1;
+                else
+                    nextstate <= s0;
+                end if;
+
+            when s1 =>
+                nextstate <= s2;
+
+            when s2 =>
+                if tb = '1' then
+                    nextstate <= s2;
+                elsif tb = '0' or counter = TIME_END then
+                    nextstate <= s3;
+                else
+                    nextstate <= s2;
+                end if;
+
+            when s3 =>
+                nextstate <= s0;
+
+            when others =>
+                nextstate <= s0;
         end case;
     end process;
+
+    
+    la <= "00" when state = s0 else 
+          "01" when state = s1 else  
+          "10" when state = s2 else  
+          "10";                     
+
+   
+    lb <= "10" when state = s0 else  
+          "10" when state = s1 else  
+          "00" when state = s2 else  
+          "01";                     
 
 end Behavioral;
