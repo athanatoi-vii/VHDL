@@ -1,68 +1,59 @@
+-- iman latifi
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-entity patternMoore_011 is
-    port(
-        clk   : in  STD_LOGIC;
-        reset : in  STD_LOGIC;
-        a     : in  STD_LOGIC;
-        y     : out STD_LOGIC
-    );
-end patternMoore_011;
+entity TB_PM_011 is
+end TB_PM_011;
 
-architecture Behavioral of patternMoore_011 is
-    type statetype is (S0, S1, S2, S3);
-    signal state, nextstate: statetype;
+architecture Behavioral of TB_PM_011 is
+
+    component PM_011 port (clk : in STD_LOGIC; reset : in STD_LOGIC; I : in STD_LOGIC; O : out STD_LOGIC); end component;
+
+    signal clk   : STD_LOGIC := '0';
+    signal reset : STD_LOGIC := '1';
+    signal I     : STD_LOGIC := '0';
+    signal O     : STD_LOGIC;
+
 begin
 
-    
-    process(clk, reset)
+    PM: entity work.PM_011 port map
+    (
+        clk => clk,
+        reset => reset,
+        I => I,
+        O => O
+    );
+
+    clk_process : process
     begin
-        if reset = '1' then
-            state <= S0;
-        elsif rising_edge(clk) then
-            state <= nextstate;
-        end if;
+        while true loop
+            clk <= '0';
+            wait for 5 ns;
+            clk <= '1';
+            wait for 5 ns;
+        end loop;
     end process;
 
-    
-    process(state, a)
+    TB_process : process
     begin
-        case state is
-            when S0 =>
-                if a = '0' then
-                    nextstate <= S1;
-                else
-                    nextstate <= S0;
-                end if;
+        reset <= '1';
+        wait for 10 ns;
+        reset <= '0';
 
-            when S1 =>
-                if a = '1' then
-                    nextstate <= S2;
-                else
-                    nextstate <= S1;
-                end if;
+        I <= '0'; wait for 10 ns;
+        I <= '1'; wait for 10 ns;
+        I <= '1'; wait for 10 ns;
+        assert O = '1' report "Error: expected O = '1' at state S3" severity error;
 
-            when S2 =>
-                if a = '1' then
-                    nextstate <= S3;
-                else
-                    nextstate <= S1;
-                end if;
+        I <= '0'; wait for 10 ns;
+        assert O = '0' report "Error: expected O = '0' at state S1" severity error;
 
-            when S3 =>
-                if a = '0' then
-                    nextstate <= S1;
-                else
-                    nextstate <= S2;
-                end if;
+        I <= '1'; wait for 10 ns;
+        I <= '1'; wait for 10 ns;
+        assert O = '1' report "Error: expected O = '1' at state S3" severity error;
 
-            when others =>
-                nextstate <= S0;
-        end case;
+        wait for 20 ns;
     end process;
-
-
-    y <= '1' when state = S3 else '0';
 
 end Behavioral;
