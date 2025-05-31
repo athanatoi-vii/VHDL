@@ -1,65 +1,59 @@
+-- iman latifi
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-entity testbench_moore011 is
-end entity testbench_moore011;
+entity TB_PM_011 is
+end TB_PM_011;
 
-architecture sim of testbench_moore011 is
-    component patternMoore_011
-        port(
-            clk   : in  STD_LOGIC;
-            reset : in  STD_LOGIC;
-            a     : in  STD_LOGIC;
-            y     : out STD_LOGIC
-        );
-    end component;
+architecture Behavioral of TB_PM_011 is
 
-    signal clk   : STD_LOGIC := '0';
-    signal reset : STD_LOGIC := '1';
-    signal a     : STD_LOGIC := '0';
-    signal y     : STD_LOGIC;
+    component PM_011 port (clk : in STD_LOGIC; reset : in STD_LOGIC; I : in STD_LOGIC; O : out STD_LOGIC); end component;
 
-    constant clk_period : time := 10 ns;
+    signal clk   : STD_LOGIC := '0';
+    signal reset : STD_LOGIC := '1';
+    signal I     : STD_LOGIC := '0';
+    signal O     : STD_LOGIC;
 
 begin
 
-    dut: patternMoore_011 port map(clk => clk, reset => reset, a => a, y => y);
+    PM: entity work.PM_011 port map
+    (
+        clk => clk,
+        reset => reset,
+        I => I,
+        O => O
+    );
 
-    clk_process: process
-    begin
-        while true loop
-            clk <= '0';
-            wait for clk_period / 2;
-            clk <= '1';
-            wait for clk_period / 2;
-        end loop;
-    end process;
+    clk_process : process
+    begin
+        while true loop
+            clk <= '0';
+            wait for 5 ns;
+            clk <= '1';
+            wait for 5 ns;
+        end loop;
+    end process;
 
-    stim_proc: process
-    begin
-        reset <= '1';
-        wait for clk_period;
-        reset <= '0';
+    TB_process : process
+    begin
+        reset <= '1';
+        wait for 10 ns;
+        reset <= '0';
 
-        a <= '0'; wait for clk_period;
-        assert y = '0' report "Error at step 1: y should be 0" severity error;
+        I <= '0'; wait for 10 ns;
+        I <= '1'; wait for 10 ns;
+        I <= '1'; wait for 10 ns;
+        assert O = '1' report "Error: expected O = '1' at state S3" severity error;
 
-        a <= '1'; wait for clk_period;
-        assert y = '0' report "Error at step 2: y should be 0" severity error;
+        I <= '0'; wait for 10 ns;
+        assert O = '0' report "Error: expected O = '0' at state S1" severity error;
 
-        a <= '1'; wait for clk_period;
-        assert y = '1' report "Error at step 3: y should be 1 (pattern 011 detected)" severity error;
+        I <= '1'; wait for 10 ns;
+        I <= '1'; wait for 10 ns;
+        assert O = '1' report "Error: expected O = '1' at state S3" severity error;
 
-        a <= '0'; wait for clk_period;
-        assert y = '0' report "Error at step 4: y should be 0" severity error;
+        wait for 20 ns;
+    end process;
 
-        a <= '1'; wait for clk_period;
-        assert y = '0' report "Error at step 5: y should be 0" severity error;
-
-        a <= '1'; wait for clk_period;
-        assert y = '1' report "Error at step 6: y should be 1 (pattern 011 detected again)" severity error;
-
-        wait;
-    end process;
-
-end architecture sim;
+end Behavioral;
