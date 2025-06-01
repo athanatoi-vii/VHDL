@@ -21,7 +21,7 @@ begin
     begin
         if reset = '1' then
             state <= s0;
-        elsif rising_edge(clk) then
+        else
             state <= nextstate;
         end if;
     end process;
