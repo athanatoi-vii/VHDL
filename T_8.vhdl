@@ -23,7 +23,7 @@ begin
             state <= s0;
         else
             state <= nextstate;
-        end if;
+        end;
     end process;
 
     process(state, ta, tb, counter)
