@@ -9,7 +9,7 @@ entity TrafficLight is
         clk, reset : in STD_LOGIC;
         ta, tb     : in STD_LOGIC;
         timer      : in STD_LOGIC;
-        la, lb     : out STD_LOGIC_VECTOR(1 DOWNTO 0);
+        la, lb     : out STD_LOGIC_VECTOR(1 DOWNTO 0)
     )
 end entity;
 
