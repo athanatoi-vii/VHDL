@@ -4,23 +4,18 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity TrafficLight is
-    generic
-    (
-        TIME_START : INTEGER := 0;
-        TIME_END   : INTEGER := 120
-    );
     port
     (
         clk, reset : in STD_LOGIC;
         ta, tb     : in STD_LOGIC;
-        la, lb     : out STD_LOGIC_VECTOR(1 DOWNTO 0)
-    );
+        timer      : in STD_LOGIC;
+        la, lb     : out STD_LOGIC_VECTOR(1 DOWNTO 0);
+    )
 end entity;
 
 architecture Behavioral of TrafficLight is
     type statetype is (s0, s1, s2);
     signal state, nextstate : statetype;
-    signal counter : INTEGER range 0 to 200 := TIME_START;
 begin
     process(clk, reset)
     begin
@@ -31,28 +26,13 @@ begin
         end if;
     end process;
 
-    process(clk, reset)
-    begin
-        if reset = '1' then
-            counter <= TIME_START;
-        elsif rising_edge(clk) then
-            if state = s0 or state = s2 then
-                if counter < TIME_END then
-                    counter <= counter + 1;
-                end if;
-            else
-                counter <= TIME_START;
-            end if;
-        end if;
-    end process;
-
     process(state, ta, tb, counter)
     begin
         case state is
             when s0 =>
                 if ta = '1' then
                     nextstate <= s0;
-                elsif ta = '0' or counter = TIME_END then
+                elsif ta = '0' or timer > 120;
                     nextstate <= s1;
                 else
                     nextstate <= s0;
@@ -62,7 +42,17 @@ begin
             when s2 =>
                 if tb = '1' then
                     nextstate <= s2;
-                elsif tb = '0' or counter = TIME_END then
+                elsif tb = '0' or timer > 120;
+                    nextstate <= s1;
+                else
+                    nextstate <= s0;
+                end if;
+            when s1 =>
+                nextstate <= s2;
+            when s2 =>
+                if tb = '1' then
+                    nextstate <= s2;
+                elsif tb = '0' or 
                     nextstate <= s0;
                 else
                     nextstate <= s2;
